@@ -15,8 +15,11 @@ namespace cls {
 
 class RemoteEstimatorProxy {
   public:
-  RemoteEstimatorProxy(){m_timer = new timer;}
-  ~RemoteEstimatorProxy(){delete m_timer;}
+  RemoteEstimatorProxy(mymutex *globalmtx,timer ** globaltimer){ 
+        m_globalmtx = globalmtx;
+        m_timer = *globaltimer;
+    }
+  ~RemoteEstimatorProxy(){}
   public:
     void IncomingPacket(int64_t arrival_time_ms, size_t payload_size, uint32_t media_ssrc, int64_t seq);
   private:
@@ -37,8 +40,8 @@ class RemoteEstimatorProxy {
     int64_t periodic_window_start_seq_ = -1;
     std::map<int64_t, int64_t> packet_arrival_times_; // seq -> time
   public:
+    mymutex *m_globalmtx;
     timer *m_timer;
-    
 };
 
 }
