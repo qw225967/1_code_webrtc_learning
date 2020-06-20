@@ -15,7 +15,7 @@ PacketData TheCreaterofData::CreateData(){
     temppacket.s_arrival_time_ms = rand()%100;
     temppacket.s_media_ssrc = rand()%100;
     temppacket.s_payload_size = rand()%100;
-    
+   return temppacket; 
 }
 
 

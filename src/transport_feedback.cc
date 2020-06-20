@@ -78,6 +78,10 @@ constexpr int64_t kTimeWrapPeriodUs = (1ll << 24) * kBaseScaleFactor;
 //    |           recv delta          |  recv delta   | zero padding  |
 //    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+constexpr size_t TransportFeedback::LastChunk::kMaxOneBitCapacity;
+constexpr size_t TransportFeedback::LastChunk::kMaxTwoBitCapacity;
+constexpr size_t TransportFeedback::LastChunk::kMaxVectorCapacity;
+
 TransportFeedback::LastChunk::LastChunk() {
   Clear();
 }

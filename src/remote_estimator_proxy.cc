@@ -1,6 +1,7 @@
-#include "remote_estimator_proxy.h"
-#include "transport_feedback.h"
+#include "../include/remote_estimator_proxy.h"
+#include "../include/transport_feedback.h"
 #include <memory>
+
 
 namespace cls {
 
@@ -51,15 +52,23 @@ void RemoteEstimatorProxy::IncomingPacket(int64_t arrival_time_ms, size_t payloa
     periodic_window_start_seq_ = packet_arrival_times_.begin()->first;
     // }
   }
+
+      if(theglobalmtx.mylock() == 1){
+        SendPeriodicFeedbacks();
+        theglobalmtx.myunlock();
+      }
 }
 
-void RemoteEstimatorProxy::SendPeriodicFeedbacks() {
+//void RemoteEstimatorProxy::SendPeriodicFeedbacks() {
+  void RemoteEstimatorProxy::SendPeriodicFeedbacks() {
   // |periodic_window_start_seq_| is the first sequence number to include in the
   // current feedback packet. Some older may still be in the map, in case a
   // reordering happens and we need to retransmit them.
-  if (periodic_window_start_seq_ == -1)
+  if (periodic_window_start_seq_ == -1) //第一个序列号为-1就返回
     return;
 
+  // 否则查找正好大于等于第一个序列号的第一个值（lower_bound（）函数返回值是一个
+  //迭代器,返回指向大于等于key的第一个值的位置）
   for (auto begin_iterator = packet_arrival_times_.lower_bound(periodic_window_start_seq_);
       begin_iterator != packet_arrival_times_.cend();
       begin_iterator = packet_arrival_times_.lower_bound(periodic_window_start_seq_))
@@ -84,6 +93,7 @@ void RemoteEstimatorProxy::SendPeriodicFeedbacks() {
     // they need to be re-sent after a reordering. Removal will be handled
     // by OnPacketArrival once packets are too old.
   }
+  return;
 }
 
 int64_t RemoteEstimatorProxy::BuildFeedbackPacket(

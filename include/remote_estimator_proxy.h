@@ -9,14 +9,19 @@
 #include "transport_feedback.h"
 #include <stdint.h>
 #include <map>
+#include "../include/timer.h"
 
 namespace cls {
 
 class RemoteEstimatorProxy {
   public:
+  RemoteEstimatorProxy(){m_timer = new timer;}
+  ~RemoteEstimatorProxy(){delete m_timer;}
+  public:
     void IncomingPacket(int64_t arrival_time_ms, size_t payload_size, uint32_t media_ssrc, int64_t seq);
   private:
-  	void SendPeriodicFeedbacks();
+    void SendPeriodicFeedbacks();
+  	//BACKCALLFUNC SendPeriodicFeedbacks();
   	static int64_t BuildFeedbackPacket(
       uint8_t feedback_packet_count,
       uint32_t media_ssrc,
@@ -31,6 +36,9 @@ class RemoteEstimatorProxy {
     uint8_t feedback_packet_count_ = 0;
     int64_t periodic_window_start_seq_ = -1;
     std::map<int64_t, int64_t> packet_arrival_times_; // seq -> time
+  public:
+    timer *m_timer;
+    
 };
 
 }
