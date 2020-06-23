@@ -28,7 +28,7 @@ int main(){
 		
 		//产生随机的测试数据
 		temp_struct_packet = temp_test.CreateData();
-		temp_time++;
+		temp_time+= 60;
 		temp_seq++;
 		
 		//调用remot中，comingpacket函数
@@ -37,7 +37,7 @@ int main(){
 									temp_struct_packet.s_media_ssrc,
 									temp_seq);
 
-		
+		sleep(60);
 
 	}
 	delete temp_remote;

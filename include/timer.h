@@ -22,7 +22,7 @@ class timer{
     clock_t start, finish;
     start = clock();//计时函数
     double totaltime = 0;//定义时间变量
-    int mes = 2000;
+    int mes = 100;
     while (1){
         finish = clock();
   
@@ -32,12 +32,11 @@ class timer{
         if(mes<totaltime){
             int a = (m_globalmutex)->mylock();
             if(a == 0){
-                (m_globalmutex)->myunlock(); 
                 sendfeedback = true;
+                (m_globalmutex)->myunlock(); 
             }
             totaltime = 0;
             start = finish;
-            cout<< "put out" << endl;
         }
     }
 

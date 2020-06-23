@@ -1,5 +1,6 @@
 #include "../include/remote_estimator_proxy.h"
 #include "../include/transport_feedback.h"
+#include <iostream>
 #include <memory>
 
 
@@ -103,6 +104,20 @@ void RemoteEstimatorProxy::IncomingPacket(int64_t arrival_time_ms, size_t payloa
     // Note: Don't erase items from packet_arrival_times_ after sending, in case
     // they need to be re-sent after a reordering. Removal will be handled
     // by OnPacketArrival once packets are too old.
+    uint8_t* packet_temp = new uint8_t;
+    size_t* position_temp ;
+    *position_temp = 0;
+    size_t max_length_temp = 1200;
+
+    
+    feedback_packet->Create(packet_temp,position_temp,max_length_temp);
+    for(int i=0;packet_temp[i] != 0;i++)
+      std::cout << packet_temp[i] ;
+
+      std::cout << std::endl;
+     
+   
+    delete packet_temp;
   }
   return;
 }

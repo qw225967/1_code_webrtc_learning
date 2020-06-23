@@ -2,6 +2,7 @@
 #include "byte_io.h"
 #include <cstdint>
 #include <limits>
+#include <iostream>
 
 
 namespace cls {
@@ -351,6 +352,17 @@ bool TransportFeedback::Create(uint8_t* packet,
   const size_t position_end = *position + BlockLength();
   const size_t padding_length = PaddingLength();
   bool has_padding = padding_length > 0;
+
+
+  //std::cout <<" positione_end = "  << position_end << std::endl;
+  //std::cout <<" padding_length = "  << padding_length << std::endl;
+  //std::cout <<" has_padding = "  << has_padding << std::endl;
+  //std::cout << std::endl;
+  //std::cout <<" ================================================================= "  << std::endl;
+  //std::cout << " 0                   1                   2                   3" << std::endl;
+  //std::cout << " 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1" << std::endl; 
+
+
   CreateHeader(kFeedbackMessageType, kPacketType, HeaderLength(), has_padding,
                packet, position);
   CreateCommonFeedback(packet + *position);
@@ -358,16 +370,14 @@ bool TransportFeedback::Create(uint8_t* packet,
 
   ByteWriter<uint16_t>::WriteBigEndian(&packet[*position], base_seq_no_);
   *position += 2;
-
-  ByteWriter<uint16_t>::WriteBigEndian(&packet[*position], num_seq_no_);
+  ByteWriter<uint16_t>::WriteBigEndian(&packet[*position], num_seq_no_); //编码前的chunk包的个数
   *position += 2;
-
-  ByteWriter<int32_t, 3>::WriteBigEndian(&packet[*position], base_time_ticks_);
+  ByteWriter<int32_t, 3>::WriteBigEndian(&packet[*position], base_time_ticks_); //packet_arrivl_time 最小时间 换算后的值base_time_ticks
   *position += 3;
+  packet[(*position)++] = feedback_seq_; //feedback包的个数,调一次buildfeedback 就记录一次
 
-  packet[(*position)++] = feedback_seq_;
-
-  for (uint16_t chunk : encoded_chunks_) {
+  
+  for (uint16_t chunk : encoded_chunks_) {  //编码后的chunk，里面仅存了delta编码后的数值
     ByteWriter<uint16_t>::WriteBigEndian(&packet[*position], chunk);
     *position += 2;
   }
@@ -378,7 +388,7 @@ bool TransportFeedback::Create(uint8_t* packet,
   }
 
   if (include_timestamps_) {
-    for (const auto& received_packet : received_packets_) {
+    for (const auto& received_packet : received_packets_) { // received_packets_是delta与seq的一个vector
       int16_t delta = received_packet.delta_ticks();
       if (delta >= 0 && delta <= 0xFF) {
         packet[(*position)++] = delta;
@@ -475,9 +485,13 @@ void TransportFeedback::CreateHeader(
   uint8_t padding_bit = padding ? 1 << 5 : 0;
   buffer[*pos + 0] =
       kVersionBits | padding_bit | static_cast<uint8_t>(count_or_format);
+      std::cout << "|" << buffer[*pos + 0];
   buffer[*pos + 1] = packet_type;
+  std::cout << "|" << buffer[*pos + 1] ;
   buffer[*pos + 2] = (length >> 8) & 0xff;
+  std::cout << "|" << buffer[*pos + 2];
   buffer[*pos + 3] = length & 0xff;
+  std::cout << "|" << buffer[*pos + 3] << std::endl;
   *pos += kHeaderLength;
 }
 
