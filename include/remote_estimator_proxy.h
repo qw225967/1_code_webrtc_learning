@@ -15,11 +15,16 @@ namespace cls {
 
 class RemoteEstimatorProxy {
   public:
-  RemoteEstimatorProxy(mymutex *globalmtx,timer ** globaltimer){ 
+  RemoteEstimatorProxy(mymutex *globalmtx,timer ** globaltimer)
+    { ;
+        position_temp = new size_t;
         m_globalmtx = globalmtx;
         m_timer = *globaltimer;
     }
-  ~RemoteEstimatorProxy(){}
+  ~RemoteEstimatorProxy()
+  { 
+      delete position_temp;
+      }
   public:
     void IncomingPacket(int64_t arrival_time_ms, size_t payload_size, uint32_t media_ssrc, int64_t seq);
   private:
@@ -42,6 +47,8 @@ class RemoteEstimatorProxy {
   public:
     mymutex *m_globalmtx;
     timer *m_timer;
+    uint8_t* packet_temp ;
+    size_t* position_temp ;
 };
 
 }

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 
-
+static int count_time = 0;
 namespace cls {
 
 int64_t back_window_ms = 500;
@@ -58,10 +58,10 @@ void RemoteEstimatorProxy::IncomingPacket(int64_t arrival_time_ms, size_t payloa
     periodic_window_start_seq_ = packet_arrival_times_.begin()->first;
     // }
   }
-      
       if(m_timer->sendfeedback == true){
         int Issendfeedback = (m_globalmtx)->mylock();
         if(Issendfeedback == 0){
+          cout << "time_ticks===================================" << endl;
           m_timer->sendfeedback = false;
           (m_globalmtx)->myunlock();
         }
@@ -87,6 +87,7 @@ void RemoteEstimatorProxy::IncomingPacket(int64_t arrival_time_ms, size_t payloa
     // auto feedback_packet = std::make_unique<rtcp::TransportFeedback>();
     //从头开始查，并从初始序列号开始建立回调包，回调包计数
     auto feedback_packet = std::make_shared<cls::TransportFeedback>();
+   cout << count_time++ <<" build the feedback =============================" << endl;
     periodic_window_start_seq_ = BuildFeedbackPacket(
         feedback_packet_count_++, media_ssrc_, periodic_window_start_seq_,
         begin_iterator, packet_arrival_times_.cend(), feedback_packet.get());
@@ -104,20 +105,14 @@ void RemoteEstimatorProxy::IncomingPacket(int64_t arrival_time_ms, size_t payloa
     // Note: Don't erase items from packet_arrival_times_ after sending, in case
     // they need to be re-sent after a reordering. Removal will be handled
     // by OnPacketArrival once packets are too old.
-    uint8_t* packet_temp = new uint8_t;
-    size_t* position_temp ;
+    
     *position_temp = 0;
     size_t max_length_temp = 1200;
-
-    
+    uint8_t *packet_temp = new uint8_t[max_length_temp];
     feedback_packet->Create(packet_temp,position_temp,max_length_temp);
-    for(int i=0;packet_temp[i] != 0;i++)
-      std::cout << packet_temp[i] ;
 
-      std::cout << std::endl;
      
-   
-    delete packet_temp;
+    delete [] packet_temp; 
   }
   return;
 }
@@ -142,6 +137,9 @@ int64_t RemoteEstimatorProxy::BuildFeedbackPacket(
   feedback_packet->SetFeedbackSequenceNumber(feedback_packet_count);
   int64_t next_sequence_number = base_sequence_number;
   for (auto it = begin_iterator; it != end_iterator; ++it) {
+    cout << it->first << endl;
+    std:: cout << "   "<< std:: endl;
+    std:: cout << "   "<< std:: endl;
     if (!feedback_packet->AddReceivedPacket(
             static_cast<uint16_t>(it->first & 0xFFFF), it->second * 1000)) {
     //   // If we can't even add the first seq to the feedback packet, we won't be

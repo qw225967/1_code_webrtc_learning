@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include "../include/timer.h"
 #include "../include/mymutex.h"
+
 using namespace std;
 
 
@@ -37,7 +38,7 @@ int main(){
 									temp_struct_packet.s_media_ssrc,
 									temp_seq);
 
-		sleep(60);
+		sleep_ms(60);
 
 	}
 	delete temp_remote;

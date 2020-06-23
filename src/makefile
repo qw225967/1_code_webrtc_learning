@@ -1,6 +1,6 @@
 #第一版三要素，复用性不强，不能节省编译时间
 app:remote_estimator_proxy.cc transport_feedback.cc main.cc createtestdata.cc
-	g++ -std=c++11 -g mymutex.cc remote_estimator_proxy.cc transport_feedback.cc main.cc createtestdata.cc -I../include -o app
+	g++ -std=c++11 -g timer.cc mymutex.cc remote_estimator_proxy.cc transport_feedback.cc main.cc createtestdata.cc -I../include -o app
 
 
 

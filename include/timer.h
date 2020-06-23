@@ -4,7 +4,18 @@
 #include<unistd.h>
 #include"mymutex.h"
 using namespace std;
+#include <stdio.h>
 
+#include <sys/select.h>
+
+static void sleep_ms(unsigned int secs)
+{
+struct timeval tval;
+	tval.tv_sec=secs/1000;	
+	tval.tv_usec=(secs*1000)%1000000;
+	select(0,NULL,NULL,NULL,&tval);
+
+}
 
 class timer{
     public:
@@ -20,13 +31,13 @@ class timer{
     //开始定时器
     static void * runtimer(void * prama){
     clock_t start, finish;
-    start = clock();//计时函数
+    start = clock();//计时函数s
     double totaltime = 0;//定义时间变量
     int mes = 100;
     while (1){
         finish = clock();
   
-        usleep(1000);
+        sleep_ms(100);
         totaltime = (double)(finish - start);
 
         if(mes<totaltime){
